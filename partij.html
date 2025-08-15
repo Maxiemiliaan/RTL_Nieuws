@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RTL Mobiel Menu</title>
+<style>
+body { margin:0; font-family: 'Inter', sans-serif; background:#fff; }
+
+/* ===== Header ===== */
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.5rem 1rem; border-bottom: 1px solid #edecec; 
+}
+.logo-desktop, .logo-mobile {
+  display:flex; align-items:center; gap:0.5rem; font-weight:50; font-size:1.2rem;
+}
+.logo-desktop img { height:15px; width:auto; display:block; }
+.logo-mobile img { height:20px; width:auto; display:block; }
+.header-actions { display:flex; align-items:center; gap:1rem; }
+
+/* Zoekknop */
+.search-btn {
+  border:0px solid #ccc; border-radius:4px; background:none;
+  cursor:pointer; padding:4px; display:flex; align-items:center; justify-content:center;
+}
+.search-btn img { height:18px; width:auto; display:block; }
+.search-btn:hover { border-color:#999; }
+
+/* Hamburger menu */
+.menu-toggle {
+  display:flex; flex-direction:column; gap:6px; cursor:pointer;
+  border:0px solid #ccc; border-radius:4px; background:none; padding:6px;
+  align-items:center; justify-content:center;
+}
+.menu-toggle span { width:20px; height:2px; background:#000; border-radius:2px; }
+.menu-toggle:hover { border-color:#999; }
+
+/* ===== Mobile menu ===== */
+.mobile-menu {
+  position:fixed; top:0; left:-100%; width:100%; height:100%; background:#fff; z-index:100;
+  transition:0.3s ease; display:flex; flex-direction:column;
+}
+.mobile-menu.open { left:0; }
+
+.mobile-menu-header {
+  position: relative; 
+  display:flex; justify-content:space-between; align-items:center;
+  padding:1rem; border-bottom:1px solid #edecec;
+}
+
+/* Close button */
+.close-menu {
+  position: absolute;
+  top:10px;
+  right:10px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:5px;
+}
+.close-menu img {
+  width:24px;
+  height:24px;
+  display:block;
+}
+
+.mobile-nav { display:flex; flex-direction:column; margin-top:0.5rem; }
+.mobile-nav a {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:1rem; font-weight:50; color:#000; text-decoration:none;
+  border-bottom:1px solid #edecec;
+}
+.mobile-nav a.active { background:#e0e0e0; }
+.arrow {
+  border:solid #000; border-width:0 2px 2px 0; display:inline-block;
+  padding:5px; transform:rotate(-45deg); align-self:center;
+  margin-right: 10px;
+}
+
+/* ===== Afbeelding sectie ===== */
+.image-section {
+  padding: 20px; /* ruimte rondom de afbeelding */
+  position: relative;
+}
+
+.image-section .main-image {
+  width: 100%;
+  max-height: 80vh; /* maximaal 80% van de viewport hoogte */
+  object-fit: cover; /* afbeelding past zich mooi aan */
+  border-radius: 0px; /* afgeronde hoeken */
+  display: block;
+  margin: 0 auto;
+}
+
+.image-footer {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.image-footer .label {
+  background-color: #81beff;
+  color: #fff;
+  padding: 8px 8px; /* hoogte en breedte */
+  font-weight: bold;
+  font-size: 13px;
+  display: flex; /* zorgt voor verticale en horizontale centrering */
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  height: 100%; /* zelfde hoogte als de lijn */
+}
+
+.image-footer .line {
+  flex: 1;
+  height: 5px;
+  background-color: #81beff;
+  margin-top: -26px;
+}
+
+.image-meta {
+  padding: 15px 20px;
+}
+
+.image-meta .quote {
+  color: #000000;
+  margin: 0 0 10px 0;
+  margin-bottom: 0;
+}
+
+.image-meta .title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 10px 0;
+  margin-top: 0;
+  line-height: 1.2;
+}
+
+.image-meta .author {
+  font-size: 0.7rem;
+  color: #999;
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.image-meta .article p {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+/* Highlight blok */
+.highlight-block {
+  display: flex;
+  align-items: stretch;
+  margin-top: -10px; /* afstand vanaf einde artikel */
+}
+
+.highlight-line {
+  width: 4px;
+  background-color: #81beff; /* lichtblauw lijntje */
+  margin-left: 20px;
+}
+
+.highlight-box {
+  background-color: #f0f0f0; /* lichtgrijs */
+  padding: 15px;
+  flex: 1;
+  margin-left: -1px; /* zorgt dat de box direct tegen het blauwe lijntje zit */
+  margin-right: 20px;
+}
+
+.highlight-quote {
+  font-size: 11px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #555;
+}
+
+.highlight-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0;
+  margin-top: -2%;
+}
+
+.highlight-separator {
+  height: 1px; /* dikte van de scheidingslijn */
+  background-color: #ccc; /* kleur van de scheidingslijn */
+  margin: 30px 20px 0 20px; /* ruimte boven en links/rechts */
+}
+
+/* Deel artikel sectie */
+.share-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px; /* ruimte rondom */
+}
+
+.share-section .share-text {
+  font-size: 17px;
+  color: #555;
+}
+
+.share-section .share-icons {
+  display: flex;
+  gap: 10px; /* ruimte tussen icoontjes */
+  border: 1px black;
+}
+
+.share-section .share-icons img {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  padding: 8px; /* ruimte binnen het vierkant */
+  border: 1px solid #ccc; /* dunne border */
+  border-radius: 0px; /* optioneel, licht afgeronde hoeken */
+  background-color: #fff; /* achtergrondkleur van het vierkant */
+}
+
+.share-section .share-icons img:hover {
+  transform: scale(1.1); /* lichte hover-effect */
+}
+
+.lees-meer-section {
+  padding: 20px;
+}
+
+.lees-meer-section h3 {
+  font-size: 17px;
+  font-weight: 50;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.lees-meer-blocks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px; /* ruimte tussen de blokken */
+  margin: 0px 0px; /* ruimte aan linker- en rechterkant */
+}
+
+.lees-meer-block {
+  background-color: #f0f0f000;
+  padding: 10px;
+  text-align: center;
+  font-size: small;
+  border-radius: 0px;
+  border: 1px solid rgba(117, 117, 117, 0.479);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+/* Fullscreen footer2 */
+.rtl-footer2-fullscreen {
+  background-color: #1a1a1a;
+  color: #fff;
+  height: 100vh; /* hele schermhoogte */
+  display: flex;
+  font-family: Arial, sans-serif;
+  padding: 0px 20px;
+}
+
+/* Container voor content */
+.rtl-footer2-fullscreen .footer2-content {
+  max-width: 800px;
+  width: 100%;
+}
+
+/* Titel */
+.rtl-footer2-fullscreen .footer2-title {
+  font-size: 22px;
+  margin-bottom: -10px;
+}
+
+/* Subtitel */
+.rtl-footer2-fullscreen .footer2-subtitle {
+  font-size: 12px;
+  font-weight:400;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  color: white;
+}
+
+/* Formulier */
+.rtl-footer2-fullscreen .footer2-form-fullwidth {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rtl-footer2-fullscreen .footer2-form-fullwidth input[type="email"] {
+  padding: 15px 20px;
+  font-size: 14px;
+  border: none;
+  border-radius: 0;   
+  background-color: #4040409e;  /* zwart invulvak */
+  color: #fff;             /* witte tekst */
+  flex: 1;
+  min-width: 250px;
+  margin-bottom: 10px;
+}
+
+.rtl-footer2-fullscreen .footer2-form-fullwidth button {
+  padding: 12px 30px;
+  font-size: 14px;
+  border: none;
+  border-radius: 0;        /* geen afgeronde hoeken */
+  background-color: #f9f9f9;  /* helemaal wit */
+  color: #000;             /* zwarte tekst */
+  cursor: pointer;
+  transition: 0.3s;
+  min-width: 360px;
+  margin-bottom: -15px;
+}
+
+.rtl-footer2-fullscreen .footer2-form-fullwidth button:hover {
+  background-color: #4040409e; /* lichtgrijs bij hover */
+}
+
+/* Privacy tekst */
+.rtl-footer2-fullscreen .footer2-privacy {
+  font-size: 12px;
+  color: rgb(213, 212, 212);
+  margin-top: 30px;
+  line-height: 1.4;
+}
+
+.rtl-footer2-fullscreen .footer2-privacy a {
+  color: #aaa;
+  text-decoration: underline;
+}
+
+/* ===== footer2 bottom sectie toegevoegd ===== */
+.footer2-bottom {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.footer2-bottom .footer2-logo img {
+  height: 18px;
+  width: 30%;
+  margin-bottom: -18px;
+}
+
+.footer2-copyright {
+    color: rgb(156, 156, 156);
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<a href="index.html" class="feature-link" style="text-decoration:none; color:inherit;">
+<div class="header">
+  <div class="logo-desktop">
+    <img src="images/RTL Logo.png" alt="RTL Logo Desktop">
+  </div>
+</a>
+  <div class="header-actions">
+    <button class="search-btn"><img src="images/zoek.png" alt="Zoeken"></button>
+    <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+  </div>
+</div>
+
+<!-- ===== Mobile menu ===== -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-header">
+    <div class="logo-mobile"><img src="images/RTL2.png" alt="RTL Logo Mobiel"></div>
+    <button class="close-menu" id="closeMenu">
+      <img src="images/kruis.png" alt="Sluit menu">
+    </button>
+  </div>
+  <nav class="mobile-nav">
+    <a href="#">Mijn account <span class="arrow"></span></a>
+    <a href="index.html">Nieuws <span class="arrow"></span></a>
+    <a href="#">Boulevard <span class="arrow"></span></a>
+    <a href="#">Tv <span class="arrow"></span></a>
+  </nav>
+</div>
+
+<!-- ===== Afbeelding met lijn en label ===== -->
+<div class="image-section">
+  <img src="images/partij.jpeg" alt="RTL Afbeelding" class="main-image">
+  <div class="image-footer">
+    <div class="label">RTL Nieuws</div>
+    <div class="line"></div>
+  </div>
+</div>
+
+<!-- Extra content onder de afbeelding -->
+  <div class="image-meta">
+    <blockquote class="quote">
+      'Nederland leiden als een bedrijf'
+    </blockquote>
+    <h1 class="title">
+      Gijsbert Dezaire start eigen partij
+    </h1>
+    <p class="author">
+      Door RTL Nieuws &bull; 9 minuten geleden; &bull; Aangepast 0 minuten geleden
+    </p>
+    <div class="article">
+      <p>
+    Den Haag – Gijsbert (59) verrast vriend en vijand met de aankondiging dat hij een eigen politieke partij opricht, met als belangrijkste missie: Nederland leiden alsof het een bedrijf is.
+
+“Het kan zo veel efficiënter,” zegt Gijsbert terwijl hij een stapel notitieboekjes doorbladert. “Beslissingen duren nu te lang, er worden fouten gemaakt en niemand neemt echt verantwoordelijkheid. Als die mensen in mijn bedrijf zouden werken, zou ik ze allang ontslagen hebben. Ik ga het aanpakken zoals ik mijn eigen projecten run: snel, doelgericht en met duidelijke resultaten.”
+
+Het idee ontstond volgens Gijsbert na het zien van het wanbeleid in de politiek. “Ik zat thuis te kijken hoe alles wordt aangepakt, of beter gezegd: niet wordt aangepakt, en dacht: dit kan echt veel beter. Als ik een bedrijf kan leiden, kan ik toch ook een land leiden?”
+
+Het partijprogramma is nog pril, maar Gijsbert hint naar concrete maatregelen: “Snellere besluitvorming, minder bureaucratie en misschien een KPI-systeem voor ministers. En ja, ook een Porsche op de oprit van het Binnenhof voor efficiency-doelen.”
+
+Politieke waarnemers reageren sceptisch maar nieuwsgierig. Sommigen zien het als luchtig theater, anderen vragen zich af of een land besturen net zo simpel is als een bedrijf leiden. Gijsbert zelf blijft overtuigd: “Als ik het kan met wraps en machines, kan ik het ook met Nederland.”
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Highlight blok onder artikel ===== -->
+ <a href="artikel.html" class="feature-link" style="text-decoration:none; color:inherit;">
+<div class="highlight-block">
+  <div class="highlight-line"></div>
+  <div class="highlight-box">
+    <blockquote class="highlight-quote">Lees ook</blockquote>
+    <h3 class="highlight-title">59-jarige man vliegt uit de bocht in Griekenland</h3>
+  </div>
+</div>
+</a>
+
+<div class="highlight-separator"></div>
+
+<div class="share-section">
+  <div class="share-text">Deel artikel</div>
+  <div class="share-icons">
+    <a href="mailto:"><img src="images/Mail.png" alt="Mail"></a>
+    <a href="https://x.com/intent/tweet?text=Jouw%20tekst%20hier" target="_blank"><img src="images/X.png" alt="X"></a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https://jouwsite.nl" target="_blank"><img src="images/facebook.png" alt="Facebook"></a>
+    <a href="https://api.whatsapp.com/send?text=Jouw%20tekst%20hier%20https://jouwsite.nl" target="_blank"><img src="images/whatsapp.png" alt="Whatsapp"></a>
+  </div>
+</div>
+
+<!-- ===== Lees meer over ===== -->
+<div class="lees-meer-section">
+  <h3>Lees meer over</h3>
+  <div class="lees-meer-blocks">
+    <a href="index.html" class="feature-link" style="text-decoration:none; color:inherit;"><div class="lees-meer-block">Algemeen</div></a>
+    <a href="economie.html" class="feature-link" style="text-decoration:none; color:inherit;"><div class="lees-meer-block">Economie</div></a>
+    <a href="sport.html" class="feature-link" style="text-decoration:none; color:inherit;"><div class="lees-meer-block">Sport</div></a>
+    <a href="politiek.html" class="feature-link" style="text-decoration:none; color:inherit;"><div class="lees-meer-block">Politiek</div></a>
+    <a href="lifestyle.html" class="feature-link" style="text-decoration:none; color:inherit;"><div class="lees-meer-block">Lifestyle</div></a>
+    <a href="uitzendingen.html" class="feature-link" style="text-decoration:none; color:inherit;"><div class="lees-meer-block">Uitzendingen</div></a>
+  </div>
+</div>
+
+<footer class="rtl-footer2-fullscreen">
+  <div class="footer2-content">
+    <h2 class="footer2-title">Blijf op de hoogte van de nieuwste RTL-programma's</h2>
+    <p class="footer2-subtitle">Ontvang wekelijks updates over nieuwe programma's, exclusieve acties en persoonlijke tips in je mailbox.</p>
+    <form class="footer2-form-fullwidth">
+      <input type="email" placeholder="E-mailadres">
+      <button type="submit">Verstuur <span class="arrow"></span></button>
+    </form>
+    <p class="footer2-privacy">Bekijk ons <a href="#">privacybeleid</a> voor meer informatie over hoe wij je gegevens verwerken. Je kunt je op elk moment onderaan de e-mail uitschrijven.</p>
+    
+    <!-- footer2 bottom toegevoegd -->
+    <div class="footer2-bottom">
+      <div class="footer2-logo">
+        <img src="images/RTL3.png" alt="RTL Logo">
+      </div>
+      <p class="footer2-copyright">&copy; 2025 - RTL Nederland. Alle rechten voorbehouden. Geen tekst- en datamining</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===== Mobile menu toggle =====
+const menuToggle = document.getElementById('menuToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+const closeMenu = document.getElementById('closeMenu');
+
+menuToggle.addEventListener('click', () => mobileMenu.classList.add('open'));
+closeMenu.addEventListener('click', () => mobileMenu.classList.remove('open'));
+
+// ===== Scrollable sub-nav =====
+const subNav = document.getElementById('subNav');
+const scrollRight = document.getElementById('scrollRight');
+const scrollLeft = document.getElementById('scrollLeft');
+
+scrollRight.addEventListener('click', () => {
+  // Scroll helemaal naar rechts
+  subNav.scrollTo({ left: subNav.scrollWidth, behavior: 'smooth' });
+  setTimeout(updateArrows, 300); // update pijlen na scroll-animatie
+});
+
+scrollLeft.addEventListener('click', () => {
+  // Scroll helemaal naar links
+  subNav.scrollTo({ left: 0, behavior: 'smooth' });
+  setTimeout(updateArrows, 300); // update pijlen na scroll-animatie
+});
+
+function updateArrows() {
+  scrollLeft.style.display = subNav.scrollLeft > 0 ? 'flex' : 'none';
+  scrollRight.style.display = subNav.scrollLeft + subNav.clientWidth < subNav.scrollWidth ? 'flex' : 'none';
+}
+
+subNav.addEventListener('scroll', updateArrows);
+window.addEventListener('resize', updateArrows);
+updateArrows();
+</script>
+
+</body>
+</html>

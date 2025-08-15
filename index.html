@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RTL Nieuws & Entertainment</title>
+</head>
+<style>
+body { margin:0; font-family: 'Inter', sans-serif; background:#fff; }
+
+/* ===== Header ===== */
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.5rem 1rem; border-bottom: 1px solid #edecec; 
+}
+.logo-desktop, .logo-mobile {
+  display:flex; align-items:center; gap:0.5rem; font-weight:50; font-size:1.2rem;
+}
+.logo-desktop img { height:15px; width:auto; display:block; }
+.logo-mobile img { height:20px; width:auto; display:block; }
+.header-actions { display:flex; align-items:center; gap:1rem; }
+
+/* Zoekknop */
+.search-btn {
+  border:0px solid #ccc; border-radius:4px; background:none;
+  cursor:pointer; padding:4px; display:flex; align-items:center; justify-content:center;
+}
+.search-btn img { height:18px; width:auto; display:block; }
+.search-btn:hover { border-color:#999; }
+
+/* Hamburger menu */
+.menu-toggle {
+  display:flex; flex-direction:column; gap:6px; cursor:pointer;
+  border:0px solid #ccc; border-radius:4px; background:none; padding:6px;
+  align-items:center; justify-content:center;
+}
+.menu-toggle span { width:20px; height:2px; background:#000; border-radius:2px; }
+.menu-toggle:hover { border-color:#999; }
+
+/* ===== Mobile menu ===== */
+.mobile-menu {
+  position:fixed; top:0; left:-100%; width:100%; height:100%; background:#fff; z-index:100;
+  transition:0.3s ease; display:flex; flex-direction:column;
+}
+.mobile-menu.open { left:0; }
+
+.mobile-menu-header {
+  position: relative; 
+  display:flex; justify-content:space-between; align-items:center;
+  padding:1rem; border-bottom:1px solid #edecec;
+}
+
+/* Close button */
+.close-menu {
+  position: absolute;
+  top:10px;
+  right:10px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:5px;
+}
+.close-menu img {
+  width:24px;
+  height:24px;
+  display:block;
+}
+
+.mobile-nav { display:flex; flex-direction:column; margin-top:0.5rem; }
+.mobile-nav a {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:1rem; font-weight:50; color:#000; text-decoration:none;
+  border-bottom:1px solid #edecec;
+}
+.mobile-nav a.active { background:#e0e0e0; }
+.arrow {
+  border:solid #000; border-width:0 2px 2px 0; display:inline-block;
+  padding:5px; transform:rotate(-45deg); align-self:center;
+  margin-right: 10px;
+}
+
+/* ===== Sub-navbar ===== */
+.sub-nav-wrapper { display:flex; align-items:center; position:relative; border-bottom:1px solid #edecec; margin-bottom: 40px; }
+.sub-nav {
+  display:flex; gap:1.5rem; padding:1rem 1rem;
+  overflow-x:auto; scroll-behavior:smooth;
+}
+.sub-nav::-webkit-scrollbar { display:none; }
+.sub-nav a { text-decoration:none; color:#aaa; font-size:16px; font-weight:50; white-space:nowrap; }
+.sub-nav a.active { color:#000; }
+.sub-nav-scroll {
+  position:absolute; width:32px; height:32px; background:#fff;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:4px; cursor:pointer; z-index:10; top:50%; transform:translateY(-50%);
+}
+.sub-nav-scroll.right { right:0; }
+.sub-nav-scroll.left { left:0; transform:translateY(-50%) rotate(180deg); }
+.sub-nav-scroll::after {
+  content:''; display:inline-block; width:6px; height:6px; border:solid #000; border-width:0 2px 2px 0; transform:rotate(-45deg);
+}
+
+/* ===== Feature box ===== */
+.feature-box { background:#f5f5f5; padding:1rem; margin-top:1rem; }
+.feature-image { position:relative; width:100%; height:250px; background:#ccc; overflow:hidden; }
+.feature-image img { width:100%; height:100%; object-fit:cover; display:block; }
+
+.feature-image::after {
+  content: '';
+  position: absolute;
+  top:0; left:0; width:100%; height:100%;
+  background: rgba(60, 60, 60, 0.4);
+  pointer-events:none;
+}
+
+.feature-caption-wrapper {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px; 
+  z-index: 2;
+}
+.feature-caption-box {
+  width: 9px;
+  height: 80px;
+  background: #81beff;
+}
+.feature-caption-texts {
+  display: flex; flex-direction: column;
+}
+.feature-quote {
+  font-size: 0.85rem;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.feature-caption-title {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  width: 150px;
+}
+
+/* ===== Kleine feature ===== */
+.feature-small { display:flex; align-items:center; gap:1rem; margin-top:1rem; }
+.feature-small-image { width:100px; height:100px; flex-shrink:0; overflow:hidden; }
+.feature-small-image img { width:100%; height:100%; object-fit:cover; display:block; }
+.feature-small-texts {
+  display: flex; flex-direction: column;
+}
+.feature-small-quote {
+  font-size: 0.75rem;
+  color: #555;
+  margin-bottom: 3px;
+}
+.feature-small-title { font-weight:700; font-size:1rem; }
+
+/* ===== Advertentie ===== */
+.advertentie {
+  background:#e0e0e000; height: 375px; margin:1rem 2rem; display:flex; align-items:center; justify-content:center;
+  font-weight:700; color:#333; border-radius:0px; padding:0px;
+}
+.advertentie img { max-width:100%; max-height:100%; object-fit:contain; }
+
+/* ===== Premium sectie ===== */
+.premium-section { display:flex; align-items:center; margin:1rem 2rem; margin-left:90px; justify-content:flex-start; gap:0.5rem; }
+.premium-text { font-weight:500; font-size:small; margin:0; }
+.premium-box { background:#000; color:#fff; padding:6px 10px; font-weight:500; font-size:small; display:flex; align-items:center; border-radius:0px; cursor:pointer; }
+.premium-box span { font-size:1.2rem; }
+
+/* ===== Foto lijst ===== */
+.photo-list { display:flex; flex-direction:column; gap:1rem; margin:1rem 0;}
+.photo-item { display:flex; gap:1rem; align-items:center; }
+.photo-image { flex-shrink:0; width:130px; height:130px; overflow:hidden; border-radius:0px; margin-left: 15px;}
+.photo-image img { width:100%; height:100%; object-fit:contain; display:block; }
+.photo-texts {
+  display: flex; flex-direction: column;
+}
+.photo-quote {
+  font-size: 0.75rem;
+  color: #555;
+  margin-bottom: 3px;
+}
+.photo-title { font-weight:700; font-size:1rem; flex:1; }
+
+/* ===== Video sectie ===== */
+.video-section {
+  margin: 2rem 1rem;
+}
+
+.video-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.video-box {
+  width: 9px;
+  height: 20px;
+  background: #81beff; /* groen blokje */
+  border-radius: 0px;
+}
+
+.video-title {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.video-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory; /* zorgt voor smooth snap bij scrollen */
+  padding: 10px;
+  -webkit-overflow-scrolling: touch; /* iOS smooth scroll */
+}
+
+.video-scroll::-webkit-scrollbar {
+  display: none; /* scrollbar verbergen */
+}
+
+.video-item {
+  flex: 0 0 auto; /* voorkomt dat items krimpen */
+  width: 250px; /* breedte van elke video */
+  scroll-snap-align: start; /* video’s klikken netjes op hun plek */
+  border-radius: 0px;
+  overflow: hidden;
+  background: #000;
+}
+
+.video-item video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+
+/* ===== Economie sectie ===== */
+.economie-section {
+  margin: 2rem 0rem;
+}
+
+.economie-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  margin-left: 0px;
+}
+
+.economie-box {
+  width: 9px;
+  height: 20px;
+  background: #2cb7c1; /* groen blokje */
+  border-radius: 0px;
+}
+
+.economie-title {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* ===== Tweede feature (Economie) ===== */
+.feature-economie-image { 
+  position: relative; 
+  width: 100%; 
+  height: 250px; 
+  background: #ccc; 
+  overflow: hidden;
+  margin-left: 0; 
+  margin-bottom: 20px;
+}
+
+.feature-economie-image img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  display: block; 
+}
+
+/* Overlay */
+.feature-economie-image::after {
+  content: '';
+  position: absolute;
+  top:0; left:0; width:100%; height:100%;
+  background: rgba(60, 60, 60, 0.4);
+  pointer-events:none;
+}
+
+.feature-economie-caption-wrapper {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  z-index: 2;
+}
+
+.feature-economie-caption-box {
+  width: 9px;
+  height: 60px;
+  background: #2cb7c1; /* kan eventueel een andere kleur */
+}
+
+.feature-economie-caption-texts {
+  display: flex; 
+  flex-direction: column;
+}
+
+.feature-economie-quote {
+  font-size: 0.85rem;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.feature-economie-caption-title {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  width: 150px;
+}
+
+/* ===== sport sectie ===== */
+.sport-section {
+  margin: 2rem 0rem;
+}
+
+.sport-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  margin-left: 0px;
+}
+
+.sport-box {
+  width: 9px;
+  height: 20px;
+  background: #81beff; /* groen blokje */
+  border-radius: 0px;
+}
+
+.sport-title {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* ===== Tweede feature (de rest) ===== */
+.feature-sport-image { 
+  position: relative; 
+  width: 100%; 
+  height: 250px; 
+  background: #ccc; 
+  overflow: hidden;
+  margin-left: 0; 
+  margin-bottom: 20px;
+}
+
+.feature-sport-image img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  display: block; 
+}
+
+/* Overlay */
+.feature-sport-image::after {
+  content: '';
+  position: absolute;
+  top:0; left:0; width:100%; height:100%;
+  background: rgba(60, 60, 60, 0.4);
+  pointer-events:none;
+}
+
+.feature-sport-caption-wrapper {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  z-index: 2;
+}
+
+.feature-sport-caption-box {
+  width: 9px;
+  height: 60px;
+  background: #81beff; /* kan eventueel een andere kleur */
+}
+
+.feature-sport-caption-texts {
+  display: flex; 
+  flex-direction: column;
+}
+
+.feature-sport-quote {
+  font-size: 0.85rem;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.feature-sport-caption-title {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  width: 150px;
+}
+
+/* ===== Foto lijst ===== */
+.photo2-list { display:flex; flex-direction:column; gap:1rem; margin:1rem 0;}
+.photo2-item { display:flex; gap:1rem; align-items:center; }
+.photo2-image { flex-shrink:0; width:130px; height:130px; overflow:hidden; border-radius:0px; margin-left: 0px;}
+.photo2-image img { width:100%; height:100%; object-fit:contain; display:block; }
+.photo2-texts {
+  display: flex; flex-direction: column;
+}
+.photo2-quote {
+  font-size: 0.75rem;
+  color: #555;
+  margin-bottom: 3px;
+}
+.photo2-title { font-weight:700; font-size:1rem; flex:1; }
+
+/* Fullscreen footer2 */
+.rtl-footer2-fullscreen {
+  background-color: #1a1a1a;
+  color: #fff;
+  height: 100vh; /* hele schermhoogte */
+  display: flex;
+  font-family: Arial, sans-serif;
+  padding: 0px 20px;
+}
+
+/* Container voor content */
+.rtl-footer2-fullscreen .footer2-content {
+  max-width: 800px;
+  width: 100%;
+}
+
+/* Titel */
+.rtl-footer2-fullscreen .footer2-title {
+  font-size: 22px;
+  margin-bottom: -10px;
+}
+
+/* Subtitel */
+.rtl-footer2-fullscreen .footer2-subtitle {
+  font-size: 12px;
+  font-weight:400;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  color: white;
+}
+
+/* Formulier */
+.rtl-footer2-fullscreen .footer2-form-fullwidth {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rtl-footer2-fullscreen .footer2-form-fullwidth input[type="email"] {
+  padding: 15px 20px;
+  font-size: 14px;
+  border: none;
+  border-radius: 0;   
+  background-color: #4040409e;  /* zwart invulvak */
+  color: #fff;             /* witte tekst */
+  flex: 1;
+  min-width: 250px;
+  margin-bottom: 10px;
+}
+
+.rtl-footer2-fullscreen .footer2-form-fullwidth button {
+  padding: 12px 30px;
+  font-size: 14px;
+  border: none;
+  border-radius: 0;        /* geen afgeronde hoeken */
+  background-color: #f9f9f9;  /* helemaal wit */
+  color: #000;             /* zwarte tekst */
+  cursor: pointer;
+  transition: 0.3s;
+  min-width: 326px;
+  margin-bottom: -15px;
+}
+
+.rtl-footer2-fullscreen .footer2-form-fullwidth button:hover {
+  background-color: #4040409e; /* lichtgrijs bij hover */
+}
+
+/* Privacy tekst */
+.rtl-footer2-fullscreen .footer2-privacy {
+  font-size: 12px;
+  color: rgb(213, 212, 212);
+  margin-top: 30px;
+  line-height: 1.4;
+}
+
+.rtl-footer2-fullscreen .footer2-privacy a {
+  color: #aaa;
+  text-decoration: underline;
+}
+
+/* ===== footer2 bottom sectie toegevoegd ===== */
+.footer2-bottom {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.footer2-bottom .footer2-logo img {
+  height: 18px;
+  width: 30%;
+  margin-bottom: -18px;
+}
+
+.footer2-copyright {
+    color: rgb(156, 156, 156);
+}
+</style>
+</style>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<a href="index.html" class="feature-link" style="text-decoration:none; color:inherit;">
+<div class="header">
+  <div class="logo-desktop">
+    <img src="images/RTL Logo.png" alt="RTL Logo Desktop">
+  </div>
+</a>
+  <div class="header-actions">
+    <button class="search-btn"><img src="images/zoek.png" alt="Zoeken"></button>
+    <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+  </div>
+</div>
+
+<!-- ===== Mobile menu ===== -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-header">
+    <div class="logo-mobile"><img src="images/RTL2.png" alt="RTL Logo Mobiel"></div>
+    <button class="close-menu" id="closeMenu">
+      <img src="images/kruis.png" alt="Sluit menu">
+    </button>
+  </div>
+  <nav class="mobile-nav">
+    <a href="#">Mijn account <span class="arrow"></span></a>
+    <a href="index.html" class="active">Nieuws <span class="arrow"></span></a>
+    <a href="#">Boulevard <span class="arrow"></span></a>
+    <a href="#">Tv <span class="arrow"></span></a>
+  </nav>
+</div>
+
+<!-- ===== Scrollbare Sub-navbar ===== -->
+<div class="sub-nav-wrapper">
+  <nav class="sub-nav" id="subNav">
+    <a href="index.html" class="active">Algemeen</a>
+    <a href="economie.html">Economie</a>
+    <a href="sport.html">Sport</a>
+    <a href="politiek.html">Politiek</a>
+    <a href="lifestyle.html">Lifestyle</a>
+    <a href="uitzendingen.html">Uitzendingen</a>
+  </nav>
+  <div class="sub-nav-scroll right" id="scrollRight"></div>
+  <div class="sub-nav-scroll left" id="scrollLeft" style="display:none;"></div>
+</div>
+<!-- ===== Feature Box ===== -->
+<div class="feature-box">
+  <!-- Grote feature -->
+  <a href="artikel.html" class="feature-link" style="text-decoration:none; color:inherit;">
+    <div class="feature-image">
+      <img src="images/auto.jpg" alt="Feature">
+      <div class="feature-caption-wrapper">
+        <div class="feature-caption-box"></div>
+        <div class="feature-caption-texts">
+          <div class="feature-quote">'Ik voelde me net Max Verstappen'</div>
+          <div class="feature-caption-title">59-Jarige man vliegt uit de bocht in Griekenland</div>
+        </div>
+      </div>
+    </div>
+  </a>
+
+  <!-- Kleine feature -->
+   <a href="shampoo.html" class="feature-link" style="text-decoration:none; color:inherit;">
+    <div class="feature-small feature-small-type1">
+      <div class="feature-small-image">
+        <img src="images/toitlettas.png" alt="Kleine foto 1">
+      </div>
+      <div class="feature-small-texts">
+        <div class="feature-small-quote">'Alsof mijn koffer niet al genoeg uitdagingen had, moet de shampoo er nu ook nog eens een chaos van maken'</div>
+        <div class="feature-small-title">Shampoo-drama bij inpakroutine van zakenreiziger</div>
+      </div>
+    </div>
+</div>
+</a>
+
+
+<!-- ===== Advertentie ===== -->
+<a href="https://blueprintautomation.com/en" rel="noopener noreferrer"><div class="advertentie"><img src="images/BPA.png" alt="advertentie"></div></a>
+
+<!-- ===== Premium sectie ===== -->
+<div class="premium-section">
+  <div class="premium-text">Advertentievrij?</div>
+  <div class="premium-box">RTL-Premium →</div>
+</div>
+
+<!-- ===== Drie foto-items sectie ===== -->
+<a href="B&B.html" class="feature-link" style="text-decoration:none; color:inherit;">
+<div class="photo-list">
+  <div class="photo-item">
+    <div class="photo-image"><img src="images/B&B.jpeg" alt="Foto 1"></div>
+    <div class="photo-texts">
+      <div class="photo-quote">'Ik had wat tijd over'</div>
+      <div class="photo-title">CEO van BPA betrapt op het kijken van B&B Vol Liefde Tijdens werk</div>
+    </div>
+  </div>
+</a>
+<a href="droomauto.html" class="feature-link" style="text-decoration:none; color:inherit;">
+  <div class="photo-item">
+    <div class="photo-image"><img src="images/992.jpeg" alt="Foto 2"></div>
+    <div class="photo-texts">
+      <div class="photo-quote">'Een droom die uitkomt'</div>
+      <div class="photo-title">Gijsbert vervult jongensdroom met aankoop Porsche 992 GT3 RS</div>
+    </div>
+  </div>
+</a>
+<a href="chicken.html" class="feature-link" style="text-decoration:none; color:inherit;">
+  <div class="photo-item">
+    <div class="photo-image"><img src="images/wraps.jpeg" alt="Foto 3"></div>
+    <div class="photo-texts">
+      <div class="photo-quote">'Ik ken niet veel restaurants die ze lekkerder maken dan ik'</div>
+      <div class="photo-title">Gijsbert opent zijn eigen chicken wraps keten</div>
+    </div>
+  </div>
+</div>
+</a>
+
+<!-- ===== Video Sectie ===== -->
+<div class="video-section">
+  <div class="video-header">
+    <div class="video-box"></div>
+    <div class="video-title">Video</div>
+  </div>
+
+  <div class="video-scroll">
+  <div class="video-item">
+    <video src="videos/oplaadblok.mp4" controls></video>
+  </div>
+  <div class="video-item">
+    <video src="videos/Caught.mp4" controls></video>
+  </div>
+  <div class="video-item">
+    <video src="videos/Porsche.mp4" controls></video>
+  </div>
+  <div class="video-item">
+    <video src="videos/chicken.mp4" controls></video>
+  </div>
+</div>
+
+
+<!-- ===== Economie Sectie ===== -->
+<!-- ===== Feature Box ===== -->
+<a href="economie.html" class="feature-link" style="text-decoration:none; color:inherit;">
+<div class="economie-section">
+  <div class="economie-header">
+    <div class="economie-box"></div>
+    <div class="economie-title">Economie</div>
+  </div>
+</a>
+
+<!-- Tweede feature: Economie -->
+<a href="bit.html" class="feature-economie-link" style="text-decoration:none; color:inherit;">
+  <div class="feature-economie-image">
+    <img src="images/bit.jpeg" alt="Feature Economie">
+
+    <div class="feature-economie-caption-wrapper">
+      <div class="feature-economie-caption-box"></div>
+      <div class="feature-economie-caption-texts">
+        <div class="feature-economie-quote">'Ik zag het allemaal al lang aankomen'</div>
+        <div class="feature-economie-caption-title">Bitcoin vliegt door het dak</div>
+      </div>
+    </div>
+  </div>
+</a>
+
+<a href="bpa.html" class="feature-link" style="text-decoration:none; color:inherit;">
+<div class="photo2-list">
+  <div class="photo2-item">
+    <div class="photo2-image"><img src="images/foutje.jpeg" alt="Foto 1"></div>
+    <div class="photo2-texts">
+      <div class="photo2-quote">'Ik dacht dat ik naar Coldplay ging, maar ik bleek ineens een verpakkingsmagnaat.'</div>
+      <div class="photo2-title">Verkopen BPA schieten door het dak</div>
+    </div>
+  </div>
+</a>
+<a href="vastgoed.html" class="feature-link" style="text-decoration:none; color:inherit;">
+  <div class="photo2-item">
+    <div class="photo2-image"><img src="images/hand.jpeg" alt="Foto 2"></div>
+    <div class="photo2-texts">
+      <div class="photo2-quote">'Politiek maakt alles ineens minder leuk'</div>
+      <div class="photo2-title">Vastgoed-expert Gijsbert verkoopt eigen pandjes</div>
+    </div>
+  </div>
+</a>
+<a href="robots.html" class="feature-link" style="text-decoration:none; color:inherit;">
+  <div class="photo2-item">
+    <div class="photo2-image"><img src="images/robot.jpeg" alt="Foto 3"></div>
+    <div class="photo2-texts">
+      <div class="photo2-quote">'AI en robots zijn de sleutel tot welvaart'</div>
+      <div class="photo2-title">Econoom Gijsbert omarmt de toekomst</div>
+    </div>
+  </div>
+</div>
+</a>
+
+<a href="sport.html" class="feature-link" style="text-decoration:none; color:inherit;">
+<div class="sport-section">
+  <div class="sport-header">
+    <div class="sport-box"></div>
+    <div class="sport-title">sport</div>
+  </div>
+</a>
+
+<a href="F1.html" class="feature-sport-link" style="text-decoration:none; color:inherit;">
+  <div class="feature-sport-image">
+    <img src="images/F1.jpeg" alt="Feature sport">
+
+    <div class="feature-sport-caption-wrapper">
+      <div class="feature-sport-caption-box"></div>
+      <div class="feature-sport-caption-texts">
+        <div class="feature-sport-quote">Formule 1</div>
+        <div class="feature-sport-caption-title">Vader en zoon verhit tijdens Formule 1</div>
+      </div>
+    </div>
+  </div>
+</a>
+
+<!-- ===== Drie foto-items sectie ===== -->
+<a href="elftal.html" class="feature-link" style="text-decoration:none; color:inherit;">
+<div class="photo2-list">
+  <div class="photo2-item">
+    <div class="photo2-image"><img src="images/elftal.jpeg" alt="Foto 1"></div>
+    <div class="photo2-texts">
+      <div class="photo2-quote">Voetbal</div>
+      <div class="photo2-title">Bank-analist uit kritiek op Nederlands elftal</div>
+    </div>
+  </div>
+</a>
+<a href="spinnen.html" class="feature-link" style="text-decoration:none; color:inherit;">
+  <div class="photo2-item">
+    <div class="photo2-image"><img src="images/spinnen.jpeg" alt="Foto 2"></div>
+    <div class="photo2-texts">
+      <div class="photo2-quote">Spinnen</div>
+      <div class="photo2-title">Gijsbert traint hard voor het wereldkampioenschap spinnen</div>
+    </div>
+  </div>
+</a>
+<a href="porsche.html" class="feature-link" style="text-decoration:none; color:inherit;">
+  <div class="photo2-item">
+    <div class="photo2-image"><img src="images/cup.jpeg" alt="Foto 3"></div>
+    <div class="photo2-texts">
+      <div class="photo2-quote">Porsche Cup</div>
+      <div class="photo2-title">Gijsbert Dezaire triomfeert in Porsche Cup</div>
+    </div>
+  </div>
+</div>
+</a>
+
+<a href="politiek.html" class="feature-link" style="text-decoration:none; color:inherit;">
+<div class="sport-section">
+  <div class="sport-header">
+    <div class="sport-box"></div>
+    <div class="sport-title">Politiek</div>
+  </div>
+</a>
+
+<a href="partij.html" class="feature-sport-link" style="text-decoration:none; color:inherit;">
+  <div class="feature-sport-image">
+    <img src="images/partij.jpeg" alt="Feature sport">
+
+    <div class="feature-sport-caption-wrapper">
+      <div class="feature-sport-caption-box"></div>
+      <div class="feature-sport-caption-texts">
+        <div class="feature-sport-quote">'Nederland leiden als een bedrijf'</div>
+        <div class="feature-sport-caption-title">Gijsbert Dezaire start eigen partij</div>
+      </div>
+    </div>
+  </div>
+</a>
+
+<a href="lifestyle.html" class="feature-link" style="text-decoration:none; color:inherit;">
+<div class="sport-section">
+  <div class="sport-header">
+    <div class="sport-box"></div>
+    <div class="sport-title">Lifestyle</div>
+  </div>
+</a>
+
+<a href="F1.html" class="feature-sport-link" style="text-decoration:none; color:inherit;">
+  <div class="feature-sport-image">
+    <img src="images/992.jpeg" alt="Feature sport">
+
+    <div class="feature-sport-caption-wrapper">
+      <div class="feature-sport-caption-box"></div>
+      <div class="feature-sport-caption-texts">
+        <div class="feature-sport-quote">'Een droom die uitkomt'</div>
+        <div class="feature-sport-caption-title">Gijsbert vervult jongensdroom met aankop Porsche 992 GT3 RS</div>
+      </div>
+    </div>
+  </div>
+</a>
+
+<!-- ===== Drie foto-items sectie ===== -->
+<a href="catamaran.html" class="feature-link" style="text-decoration:none; color:inherit;">
+<div class="photo2-list">
+  <div class="photo2-item">
+    <div class="photo2-image"><img src="images/catamaran.jpeg" alt="Foto 1"></div>
+    <div class="photo2-texts">
+      <div class="photo2-quote">'Als ik niet op de golven zit, voelt het alsof ik stilsta.'</div>
+      <div class="photo2-title">Zakenman Gijsbert koopt luxe catamaran in Spanje</div>
+    </div>
+  </div>
+</a>
+<a href="corona.html" class="feature-link" style="text-decoration:none; color:inherit;">
+  <div class="photo2-item">
+    <div class="photo2-image"><img src="images/corona.jpeg" alt="Foto 2"></div>
+    <div class="photo2-texts">
+      <div class="photo2-quote">'Geniet van het leven, maar wel met mate'</div>
+      <div class="photo2-title">Geniet met mate: Gijsbert over de kunst van het leven</div>
+    </div>
+  </div>
+</a>
+<a href="investeren.html" class="feature-link" style="text-decoration:none; color:inherit;">
+  <div class="photo2-item">
+    <div class="photo2-image"><img src="images/casino.jpeg" alt="Foto 3"></div>
+    <div class="photo2-texts">
+      <div class="photo2-quote">'Investeer alles in crypto en geniet daarna in het casino'</div>
+      <div class="photo2-title">Alles op crypto</div>
+    </div>
+  </div>
+</div>
+</a>
+
+<footer class="rtl-footer2-fullscreen">
+  <div class="footer2-content">
+    <h2 class="footer2-title">Blijf op de hoogte van de nieuwste RTL-programma's</h2>
+    <p class="footer2-subtitle">Ontvang wekelijks updates over nieuwe programma's, exclusieve acties en persoonlijke tips in je mailbox.</p>
+    <form class="footer2-form-fullwidth">
+      <input type="email" placeholder="E-mailadres">
+      <button type="submit">Verstuur <span class="arrow"></span></button>
+    </form>
+    <p class="footer2-privacy">Bekijk ons <a href="#">privacybeleid</a> voor meer informatie over hoe wij je gegevens verwerken. Je kunt je op elk moment onderaan de e-mail uitschrijven.</p>
+    
+    <!-- footer2 bottom toegevoegd -->
+    <div class="footer2-bottom">
+      <div class="footer2-logo">
+        <img src="images/RTL3.png" alt="RTL Logo">
+      </div>
+      <p class="footer2-copyright">&copy; 2025 - RTL Nederland. Alle rechten voorbehouden. Geen tekst- en datamining</p>
+    </div>
+  </div>
+</footer>
+
+
+
+<script>
+// ===== Mobile menu toggle =====
+const menuToggle = document.getElementById('menuToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+const closeMenu = document.getElementById('closeMenu');
+
+menuToggle.addEventListener('click', () => mobileMenu.classList.add('open'));
+closeMenu.addEventListener('click', () => mobileMenu.classList.remove('open'));
+
+// ===== Scrollable sub-nav =====
+const subNav = document.getElementById('subNav');
+const scrollRight = document.getElementById('scrollRight');
+const scrollLeft = document.getElementById('scrollLeft');
+
+scrollRight.addEventListener('click', () => {
+  // Scroll helemaal naar rechts
+  subNav.scrollTo({ left: subNav.scrollWidth, behavior: 'smooth' });
+  setTimeout(updateArrows, 300); // update pijlen na scroll-animatie
+});
+
+scrollLeft.addEventListener('click', () => {
+  // Scroll helemaal naar links
+  subNav.scrollTo({ left: 0, behavior: 'smooth' });
+  setTimeout(updateArrows, 300); // update pijlen na scroll-animatie
+});
+
+function updateArrows() {
+  scrollLeft.style.display = subNav.scrollLeft > 0 ? 'flex' : 'none';
+  scrollRight.style.display = subNav.scrollLeft + subNav.clientWidth < subNav.scrollWidth ? 'flex' : 'none';
+}
+
+subNav.addEventListener('scroll', updateArrows);
+window.addEventListener('resize', updateArrows);
+updateArrows();
+</script>
+</body>
+</html>
